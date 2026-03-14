@@ -1,0 +1,356 @@
+/* ── Reset & Base ──────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #1e1e2e;
+  --bg-alt:    #181825;
+  --surface:   #252538;
+  --surface2:  #2a2a3d;
+  --border:    #3b3b54;
+  --border-lt: #4a4a65;
+  --text:      #cdd6f4;
+  --text-dim:  #a6adc8;
+  --text-muted:#6c7086;
+  --accent:    #89b4fa;
+  --accent2:   #74c7ec;
+  --green:     #a6e3a1;
+  --red:       #f38ba8;
+  --yellow:    #f9e2af;
+  --header-bg: #1b1b2d;
+  --selected:  rgba(137,180,250,0.15);
+  --highlight: rgba(249,226,175,0.30);
+  --row-height: 26px;
+  --col-width:  100px;
+  --header-w:   46px;
+  --header-h:   28px;
+  --formula-h:  32px;
+  --topbar-h:   42px;
+  --tabs-h:     34px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+body {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Top Bar ──────────────────────────────────────────── */
+#topbar {
+  height: var(--topbar-h);
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  flex-shrink: 0;
+}
+#topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#logo-icon { color: var(--accent); }
+#workbook-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+}
+
+#topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Search */
+#search-box {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0 8px;
+  height: 28px;
+  gap: 5px;
+}
+#search-box svg { color: var(--text-muted); flex-shrink: 0; }
+#search-input {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 12px;
+  width: 150px;
+  outline: none;
+}
+#search-input::placeholder { color: var(--text-muted); }
+#search-count {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.search-nav {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 10px;
+  padding: 2px;
+  line-height: 1;
+}
+.search-nav:hover { color: var(--text); }
+
+/* Download */
+#download-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+#download-btn:hover { opacity: 0.85; }
+#download-btn svg { stroke: var(--bg); }
+
+/* ── Formula Bar ──────────────────────────────────────── */
+#formula-bar {
+  height: var(--formula-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+#cell-ref {
+  width: 70px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--accent);
+  border-right: 1px solid var(--border);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+#cell-value-display {
+  flex: 1;
+  padding: 0 10px;
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Spreadsheet Layout ───────────────────────────────── */
+#spreadsheet-container {
+  flex: 1;
+  display: grid;
+  grid-template-columns: var(--header-w) 1fr;
+  grid-template-rows: var(--header-h) 1fr;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Corner cell */
+#corner {
+  background: var(--header-bg);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  z-index: 4;
+}
+
+/* Column headers */
+#col-headers-wrapper {
+  overflow: hidden;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--border);
+  z-index: 3;
+}
+#col-headers {
+  display: flex;
+  height: var(--header-h);
+}
+.col-header {
+  min-width: var(--col-width);
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+  user-select: none;
+}
+.col-header.active {
+  color: var(--accent);
+  background: var(--selected);
+}
+
+/* Row headers */
+#row-headers-wrapper {
+  overflow: hidden;
+  background: var(--header-bg);
+  border-right: 1px solid var(--border);
+  z-index: 3;
+}
+#row-headers {
+  display: flex;
+  flex-direction: column;
+}
+.row-header {
+  width: var(--header-w);
+  min-height: var(--row-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  user-select: none;
+}
+.row-header.active {
+  color: var(--accent);
+  background: var(--selected);
+}
+
+/* Grid */
+#grid-wrapper {
+  overflow: auto;
+  position: relative;
+}
+#grid {
+  position: relative;
+}
+
+/* Cells */
+.cell {
+  position: absolute;
+  height: var(--row-height);
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  font-size: 12px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: cell;
+  color: var(--text);
+  transition: background 0.08s;
+}
+.cell:hover {
+  background: var(--selected);
+}
+.cell.selected {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+  background: var(--selected);
+  z-index: 2;
+}
+.cell.search-match {
+  background: var(--highlight) !important;
+}
+.cell.search-active {
+  outline: 2px solid var(--yellow) !important;
+  outline-offset: -1px;
+  z-index: 3;
+}
+
+/* Number formatting helpers */
+.cell.num { text-align: right; justify-content: flex-end; }
+.cell.str { text-align: left; justify-content: flex-start; }
+.cell.pct-positive { color: var(--green); }
+.cell.pct-negative { color: var(--red); }
+
+/* ── Sheet Tabs ───────────────────────────────────────── */
+#sheet-tabs-bar {
+  height: var(--tabs-h);
+  background: var(--bg-alt);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  flex-shrink: 0;
+  overflow-x: auto;
+}
+#sheet-tabs {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+.sheet-tab {
+  padding: 5px 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+  border-bottom: 2px solid transparent;
+}
+.sheet-tab:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+.sheet-tab.active {
+  color: var(--accent);
+  background: var(--surface);
+  border-bottom: 2px solid var(--accent);
+  font-weight: 600;
+}
+#sheet-info {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  padding-left: 12px;
+  flex-shrink: 0;
+}
+
+/* ── Scrollbar ────────────────────────────────────────── */
+#grid-wrapper::-webkit-scrollbar { width: 10px; height: 10px; }
+#grid-wrapper::-webkit-scrollbar-track { background: var(--bg-alt); }
+#grid-wrapper::-webkit-scrollbar-thumb { background: var(--border-lt); border-radius: 5px; }
+#grid-wrapper::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+#grid-wrapper::-webkit-scrollbar-corner { background: var(--bg-alt); }
+
+/* ── Loading ──────────────────────────────────────────── */
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  font-size: 16px;
+  color: var(--text-dim);
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 640px) {
+  #search-input { width: 100px; }
+  #download-btn span { display: none; }
+  :root { --col-width: 80px; }
+}
