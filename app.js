@@ -250,18 +250,35 @@
       el.classList.add("str");
     }
 
+    // Determine if we should apply the Excel background
+    // Only apply dark backgrounds; skip light ones to preserve dark theme
+    let hasDarkBg = false;
+    if (cd.bg) {
+      const bgLum = colorLuminance(cd.bg);
+      if (bgLum < 140) {
+        el.style.backgroundColor = cd.bg;
+        hasDarkBg = true;
+      }
+    }
+
     // Font
     if (cd.font) {
       if (cd.font.b) el.style.fontWeight = "700";
       if (cd.font.i) el.style.fontStyle = "italic";
       if (cd.font.u) el.style.textDecoration = "underline";
       if (cd.font.sz) el.style.fontSize = Math.min(cd.font.sz, 16) + "px";
-      if (cd.font.color) el.style.color = remapColor(cd.font.color);
-    }
-
-    // Background
-    if (cd.bg) {
-      el.style.backgroundColor = cd.bg;
+      if (cd.font.color) {
+        const fontLum = colorLuminance(cd.font.color);
+        if (hasDarkBg && fontLum > 180) {
+          // Light text on dark bg — keep original (e.g. white headers)
+          el.style.color = cd.font.color;
+        } else if (fontLum < 100) {
+          // Dark text — remap to light for our dark theme
+          el.style.color = "#e2eafc";
+        } else {
+          el.style.color = cd.font.color;
+        }
+      }
     }
 
     // Alignment
@@ -464,17 +481,13 @@
   });
 
   /* ── Helpers ─────────────────────────────────────────── */
-  /* Remap dark Excel font colors to readable light colors */
-  function remapColor(hex) {
-    if (!hex) return null;
+  /* Get perceived luminance of a hex color */
+  function colorLuminance(hex) {
+    if (!hex || hex.length < 7) return 128;
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
-    const lum = (0.299 * r + 0.587 * g + 0.114 * b);
-    // Dark colors become white; mid-dark become light blue
-    if (lum < 60) return "#e2eafc";   // very dark → soft white-blue
-    if (lum < 120) return "#89b4fa";  // mid-dark → light blue
-    return hex; // already light enough
+    return 0.299 * r + 0.587 * g + 0.114 * b;
   }
 
   function colLetter(c) {
