@@ -8,9 +8,9 @@
   --surface2:  #2a2a3d;
   --border:    #3b3b54;
   --border-lt: #4a4a65;
-  --text:      #cdd6f4;
-  --text-dim:  #a6adc8;
-  --text-muted:#6c7086;
+  --text:      #e2eafc;
+  --text-dim:  #b8c7e8;
+  --text-muted:#8294b8;
   --accent:    #89b4fa;
   --accent2:   #74c7ec;
   --green:     #a6e3a1;
@@ -278,8 +278,8 @@ body {
 /* Number formatting helpers */
 .cell.num { text-align: right; justify-content: flex-end; }
 .cell.str { text-align: left; justify-content: flex-start; }
-.cell.pct-positive { color: var(--green); }
-.cell.pct-negative { color: var(--red); }
+.cell.pct-positive { color: #a6e3a1 !important; }
+.cell.pct-negative { color: #f38ba8 !important; }
 
 /* ── Sheet Tabs ───────────────────────────────────────── */
 #sheet-tabs-bar {

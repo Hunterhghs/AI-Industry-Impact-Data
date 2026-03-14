@@ -256,7 +256,7 @@
       if (cd.font.i) el.style.fontStyle = "italic";
       if (cd.font.u) el.style.textDecoration = "underline";
       if (cd.font.sz) el.style.fontSize = Math.min(cd.font.sz, 16) + "px";
-      if (cd.font.color) el.style.color = cd.font.color;
+      if (cd.font.color) el.style.color = remapColor(cd.font.color);
     }
 
     // Background
@@ -464,6 +464,19 @@
   });
 
   /* ── Helpers ─────────────────────────────────────────── */
+  /* Remap dark Excel font colors to readable light colors */
+  function remapColor(hex) {
+    if (!hex) return null;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const lum = (0.299 * r + 0.587 * g + 0.114 * b);
+    // Dark colors become white; mid-dark become light blue
+    if (lum < 60) return "#e2eafc";   // very dark → soft white-blue
+    if (lum < 120) return "#89b4fa";  // mid-dark → light blue
+    return hex; // already light enough
+  }
+
   function colLetter(c) {
     let s = "";
     while (c > 0) {
